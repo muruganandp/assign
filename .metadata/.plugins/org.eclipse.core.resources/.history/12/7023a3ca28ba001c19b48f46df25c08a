@@ -1,0 +1,5 @@
+package com.onboarding.assign.model;
+
+public class Employee {
+
+}

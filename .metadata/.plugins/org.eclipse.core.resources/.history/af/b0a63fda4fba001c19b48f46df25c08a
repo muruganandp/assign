@@ -1,0 +1,23 @@
+package com.onboarding.mapper;
+
+import java.util.List;
+
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+import com.onboarding.assign.model.Employee;
+import com.onboarding.vo.EmployeeVO;
+
+@Mapper(componentModel = "spring")
+public interface EmployeeMapper {
+	EmployeeMapper INSTANCE = Mappers.getMapper(EmployeeMapper.class);
+    @Mapping(source = "employee.id", target = "id")
+    EmployeeVO modelToVO(Employee employee);
+	List<EmployeeVO> modelsToVos(List<Employee> employee);
+    @InheritInverseConfiguration
+    Employee voToModel(EmployeeVO employeeVO);
+
+
+}

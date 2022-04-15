@@ -1,0 +1,77 @@
+package com.allocation.assign.controller;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.allocation.assign.model.Allocation;
+import com.allocation.assign.model.Employee;
+import com.allocation.assign.repository.AllocationRepository;
+import com.allocation.assign.util.StringConstants;
+import com.allocation.assign.wrapper.EmployeeAllocationWrapper;
+
+@RestController
+@RequestMapping("/api")
+public class EmployeeAllocationController {
+	Logger logger = LoggerFactory.getLogger(EmployeeAllocationController.class);
+
+	@Autowired
+	AllocationRepository allocationRepository;
+
+	@Autowired
+	RestTemplate restTemplate;
+
+	@GetMapping("/allallocations")
+	public ResponseEntity<List<Allocation>> getAllAllocations(@RequestParam(required = false) String project) {
+
+		logger.info(
+				"Inside EmployeeAllocationController :: getAllAllocations method for the parameter :" + project + "::");
+		try {
+			List<Allocation> allocationList = new ArrayList<Allocation>();
+			allocationRepository.findAll().forEach(allocationList::add);
+			if (allocationList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(allocationList, HttpStatus.OK);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/empallocations")
+	public ResponseEntity<List<String>> getEmployeeAllocatios(@RequestParam(required = true) long allocationId) {
+		logger.info("Inside EmployeeAllocationController :: getEmployeeAllocatios method for the parameter :"
+				+ allocationId + "::");
+		try {
+
+			List<Allocation> allocationList = new ArrayList<Allocation>();
+			allocationList = allocationRepository.findById(allocationId);
+			for (Allocation allocation : allocationList) {
+				ResponseEntity<Employee[]> response = restTemplate.getForEntity(
+						StringConstants.REST_URL_EMPLOYEE + allocation.getEmployee().getId(), Employee[].class);
+				Employee[] empArrayArray = response.getBody();
+				return new ResponseEntity<>(
+						Arrays.stream(empArrayArray).map(Employee::getName).collect(Collectors.toList()),
+						HttpStatus.OK);
+			}
+
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+}

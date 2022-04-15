@@ -1,0 +1,5 @@
+package com.onboarding.vo;
+
+public class EmployeeVO {
+
+}

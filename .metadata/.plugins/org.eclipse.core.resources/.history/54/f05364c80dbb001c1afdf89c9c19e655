@@ -1,0 +1,14 @@
+package com.allocation.assign.wrapper;
+
+import lombok.Data;
+
+@Data
+public class EmployeeAllocationWrapper {
+	private long allocationId;
+	private long employeeId;
+	private String employeeName;
+	private String department;
+	private String designation;
+	private String project;
+
+}

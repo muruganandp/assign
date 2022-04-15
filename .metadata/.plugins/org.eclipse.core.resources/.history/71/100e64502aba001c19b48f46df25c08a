@@ -1,0 +1,5 @@
+package com.onboarding.assign.repository;
+
+public class EmployeeRepository {
+
+}

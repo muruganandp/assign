@@ -1,0 +1,5 @@
+package com.allocation.assign.model;
+
+public class Allocation {
+
+}

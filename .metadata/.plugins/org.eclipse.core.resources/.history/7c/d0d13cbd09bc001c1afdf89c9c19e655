@@ -1,0 +1,101 @@
+package com.allocation.assign.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.allocation.assign.model.Allocation;
+import com.allocation.assign.model.Employee;
+import com.allocation.assign.repository.AllocationRepository;
+import com.allocation.assign.util.StringConstants;
+import com.allocation.assign.wrapper.EmployeeAllocationWrapper;
+
+@RestController
+@RequestMapping("/api")
+public class EmployeeAllocationController {
+	Logger logger = LoggerFactory.getLogger(EmployeeAllocationController.class);
+
+	@Autowired
+	AllocationRepository allocationRepository;
+
+	@Autowired
+	RestTemplate restTemplate;
+
+	@GetMapping("/allallocations")
+	public ResponseEntity<List<Allocation>> getAllAllocations() {
+
+		logger.info("Inside EmployeeAllocationController :: getAllAllocations method for the parameter :");
+		try {
+			List<Allocation> allocationList = new ArrayList<Allocation>();
+			allocationRepository.findAll().forEach(allocationList::add);
+			if (allocationList.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(allocationList, HttpStatus.OK);
+
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/empallocations/{allocationId}")
+	public String getEmployeeAllocatios(
+			@PathVariable("allocationId") long allocationId) {
+		logger.info("Inside EmployeeAllocationController :: getEmployeeAllocatios method for the parameter :"
+				+ allocationId + "::");
+		try {
+			List<Allocation> allocationList = new ArrayList<Allocation>();
+			List<EmployeeAllocationWrapper> wrapperList = new ArrayList<EmployeeAllocationWrapper>();
+			// ** fetching the allocation details.
+			allocationList = allocationRepository.findById(allocationId);
+			EmployeeAllocationWrapper empWrapper = new EmployeeAllocationWrapper();
+
+			for (Allocation allocation : allocationList) {
+				// ** fetching the external api using Rest template
+				return restTemplate.exchange(
+						StringConstants.REST_URL_EMPLOYEE + allocation.getEmployee().getEmpCode(), HttpMethod.GET, null,
+						String.class).getBody();
+						/*empWrapper.setAllocationId(allocation.getId());
+	         		    empWrapper.setDepartment(allocation.getProject());
+						empWrapper.setProject(allocation.getProject());
+						empWrapper.setEmployeeCode(response.getBody().getEmpCode());
+						empWrapper.setEmployeeName(response.getBody().getName());
+						empWrapper.setDepartment(response.getBody().getDepartment());
+						empWrapper.setDesignation(response.getBody().getDesignation());					
+
+				wrapperList.add(empWrapper);*/
+			}
+			//return new ResponseEntity<String>(response, HttpStatus.OK);
+
+		} catch (Exception e) {
+			//return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ";
+		}
+	}
+
+	@PostMapping("/createAllocation")
+	public ResponseEntity<Allocation> createAllocation(@RequestBody Allocation allocation) {
+		try {
+			Allocation newAllocation = new Allocation(allocation.getEmployee(), allocation.getProject());
+			allocationRepository.save(newAllocation);
+			return new ResponseEntity<>(newAllocation, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+}

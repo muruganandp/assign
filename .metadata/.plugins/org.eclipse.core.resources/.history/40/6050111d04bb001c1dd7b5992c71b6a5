@@ -1,0 +1,46 @@
+package com.allocation.assign.controller;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.allocation.assign.model.Allocation;
+import com.allocation.assign.repository.AllocationRepository;
+import com.onboarding.assign.model.Employee;
+
+@RestController
+@RequestMapping("/api")
+public class EmployeeAllocationController {
+	Logger logger = LoggerFactory.getLogger(EmployeeAllocationController.class);
+	
+	@Autowired
+	AllocationRepository allocationRepository;
+	
+	@GetMapping("/allallocations")
+	public ResponseEntity<List<Allocation>> getAllAllocations(@RequestParam(required = false) String project) {
+		
+		logger.info("Inside EmployeeAllocationController :: getAllAllocations method for the parameter :" + project + "::");
+		try {
+			List<Allocation> allocaionList = new ArrayList<Allocation>();
+
+			
+		}catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);		
+		}
+		
+		
+		
+		return null;
+	}
+	
+
+
+}
