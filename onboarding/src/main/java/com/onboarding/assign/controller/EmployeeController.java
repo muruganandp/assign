@@ -26,7 +26,7 @@ import com.onboarding.assign.model.Employee;
 import com.onboarding.assign.repository.EmployeeRepository;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/employee")
 public class EmployeeController {
 
 	Logger logger = LoggerFactory.getLogger(EmployeeController.class);
@@ -56,7 +56,7 @@ public class EmployeeController {
 		}
 	}
 
-	@GetMapping("/employee/{empCode}")
+	@GetMapping("/{empCode}")
 	public ResponseEntity<List<Employee>> getEmployeeById(@PathVariable("empCode") String id) {
 		logger.info("Inside EmployeeController :: getEmployeeById method for the parameter :" + id + "::");
 
