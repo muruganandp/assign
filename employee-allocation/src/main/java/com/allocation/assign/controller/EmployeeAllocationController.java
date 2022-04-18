@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +17,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.allocation.assign.delegate.EmployeeServiceDelegate;
 import com.allocation.assign.model.Allocation;
-import com.allocation.assign.model.Employee;
 import com.allocation.assign.repository.AllocationRepository;
 import com.allocation.assign.util.StringConstants;
-import com.allocation.assign.wrapper.EmployeeAllocationWrapper;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/allocation")
 public class EmployeeAllocationController {
 	Logger logger = LoggerFactory.getLogger(EmployeeAllocationController.class);
 
 	@Autowired
 	AllocationRepository allocationRepository;
 
-	@Autowired
+	@Autowired 
 	RestTemplate restTemplate;
+	 
+	
+	@Autowired
+	EmployeeServiceDelegate empServiceDelegate;
 
 	@GetMapping("/allallocations")
 	public ResponseEntity<List<Allocation>> getAllAllocations() {
@@ -53,7 +55,7 @@ public class EmployeeAllocationController {
 	}
 
 	@GetMapping("/empallocations/{allocationId}")
-	public String getEmployeeAllocatios(
+	public String getEmployeeAllocations(
 			@PathVariable("allocationId") long allocationId) {
 		logger.info("Inside EmployeeAllocationController :: getEmployeeAllocatios method for the parameter :"
 				+ allocationId + "::");
@@ -61,9 +63,13 @@ public class EmployeeAllocationController {
 			List<Allocation> allocationList = new ArrayList<Allocation>();
 			// ** fetching the allocation details.
 			allocationList = allocationRepository.findById(allocationId);
-				return restTemplate.exchange(
-						StringConstants.REST_URL_EMPLOYEE + allocationList.get(0).getEmployee().getEmpCode(), HttpMethod.GET, null,
-						String.class).getBody();
+			
+			/*  return restTemplate.exchange( StringConstants.REST_URL_EMPLOYEE +
+			 	allocationList.get(0).getEmployee().getEmpCode(), HttpMethod.GET, null,
+			  	String.class).getBody(); */
+			 
+			return empServiceDelegate.callEmployeeServiceAndgetData(allocationList.get(0).getEmployee().getEmpCode());
+				
 		} catch (Exception e) {
 			return e.getMessage();
 		}
@@ -77,6 +83,24 @@ public class EmployeeAllocationController {
 			return new ResponseEntity<>(newAllocation, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping("/{allocationId}")
+	public String getEmployeeAllocationId(
+			@PathVariable("allocationId") long allocationId) {
+		logger.info("Inside EmployeeAllocationController :: getEmployeeAllocatios method for the parameter :"
+				+ allocationId + "::");
+		try {
+			List<Allocation> allocationList = new ArrayList<Allocation>();
+			// ** fetching the allocation details.
+			allocationList = allocationRepository.findById(allocationId);			
+			return restTemplate.exchange( StringConstants.REST_URL_EMPLOYEE1 +
+			 	allocationList.get(0).getEmployee().getEmpCode(), HttpMethod.GET, null,
+			  	String.class).getBody(); 			 
+				
+		} catch (Exception e) {
+			return e.getMessage();
 		}
 	}
 

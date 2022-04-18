@@ -16,7 +16,7 @@ public interface EmployeeClient {
      * @param empCode
      * @return
      */
-    @GetMapping(value= "/api/employee/{empCode}")
+    @GetMapping(value= "/employee/{empCode}")
     public List<Employee> getEmployees(@PathVariable(name= "empCode") String empCode);
 
 }

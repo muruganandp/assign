@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.allocation.assign.model.Employee;
 
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/employee")
 public class EmployeeClientController {
 	
 	Logger logger = LoggerFactory.getLogger(EmployeeClientController.class);
