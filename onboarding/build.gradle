@@ -4,6 +4,7 @@ plugins {
 	id 'java'	
 }
 
+
 group = 'com.onboarding.assign'
 version = '0.0.1-SNAPSHOT'
 
@@ -13,11 +14,8 @@ repositories {
 }
 
 ext {
-    mapstructVersion = "1.5.0.RC1"
-    lombokVersion = "1.18.20"
-    lombokMapstructBindingVersion = "0.2.0"
-    javaLanguageLevel = '11'
-    generatedMapperSourcesDir = "${buildDir}/generated-src/mapstruct/main"
+    
+    javaLanguageLevel = '1.8'
     set('springCloudVersion', "2021.0.1")
 }
 
@@ -29,28 +27,33 @@ configurations {
 	}
 }
 
-
+compileJava {
+    options.compilerArgs = [
+            '-Amapstruct.defaultComponentModel=spring'
+    ]
+}
 
 
 
 dependencies {
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}", "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.mapstruct:mapstruct:1.4.2.Final"
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	//implementation 'org.slf4j:slf4j-api:1.7.30'
-    //implementation 'org.slf4j:slf4j-simple:1.7.30'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation('org.springframework.boot:spring-boot-starter-validation')
-	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'	
+	compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 	
-	
-	compileOnly "org.projectlombok:lombok:1.16.16"	
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", "org.projectlombok:lombok:${lombokVersion}", "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+   
+    
 	
 }
 

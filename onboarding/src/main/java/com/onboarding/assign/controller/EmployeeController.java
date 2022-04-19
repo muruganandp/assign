@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.onboarding.assign.mapper.EmployeeMapper;
 import com.onboarding.assign.model.Employee;
 import com.onboarding.assign.repository.EmployeeRepository;
+import com.onboarding.assign.vo.EmployeeVO;
 
 @RestController
 @RequestMapping("/employee")
@@ -34,9 +36,10 @@ public class EmployeeController {
 	@Autowired
 	EmployeeRepository employeeRepository;
 
-	/*
-	 * @Autowired EmployeeMapper employeeMapper;
-	 */
+	
+	 @Autowired
+	 EmployeeMapper employeeMapper;
+	
 
 	@GetMapping("/employee")
 	public ResponseEntity<List<Employee>> getAllEmployee(@RequestParam(required = false) String name) {
@@ -69,11 +72,11 @@ public class EmployeeController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Employee> createEmployeeRecord(@RequestBody Employee employee) {
-		logger.info("Inside EmployeeController :: createEmployeeRecord method for the parameter :" + employee.toString()
+	public ResponseEntity<Employee> createEmployeeRecord(@RequestBody EmployeeVO employeeVo) {
+		logger.info("Inside EmployeeController :: createEmployeeRecord method for the parameter :" + employeeVo.toString()
 				+ "::");
 		try {
-			// Employee employee = employeeMapper.voToModel(employeeVo);
+			Employee employee = employeeMapper.voToModel(employeeVo);
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 
